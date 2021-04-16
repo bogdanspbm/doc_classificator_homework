@@ -41,7 +41,7 @@
       <recent name="D:\Project Files\doc_classificator_homework\Task2" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.task_3">
+  <component name="RunManager" selected="Python.task_2">
     <configuration name="task_2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="doc_classificator_homework" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -86,8 +86,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.task_3" />
         <item itemvalue="Python.task_2" />
+        <item itemvalue="Python.task_3" />
       </list>
     </recent_temporary>
   </component>
