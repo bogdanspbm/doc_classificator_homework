@@ -9,6 +9,9 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 
+tf.compat.v1.disable_eager_execution()
+rng = np.random
+
 print(tf.__version__)
 
 D = np.loadtxt('../data/lin_reg.txt', delimiter=',')
@@ -17,42 +20,25 @@ LAMBDA = 0.5  # L2 regularization factor
 X = D[:, :-1]
 Y = D[:, -1]
 
-normalizer = tf.keras.layers.Normalization(axis=-1)
-normalizer.adapt(np.array(X))
+learning_rate = 0.0001
+training_epochs = 1000
+display_step = 50
 
-tf.keras.regularizers.L2(l2=1)
+train_X = X.copy()
+train_Y = Y.copy()
 
-linear_model = tf.keras.Sequential([
-    normalizer,
-    layers.Dense(units=1)
-])
+W = tf.Variable(rng.randn(4, 1), name="weight")
+b = tf.Variable(rng.randn(1), name="bias")
+LAMBDA = tf.Variable(0.5, name="regularization", dtype=tf.float64)
 
-linear_model.compile(
-    optimizer=tf.optimizers.Adam(learning_rate=0.1),
-    loss='mean_absolute_error')
+print(W)
+print(b)
 
-history = linear_model.fit(
-    X,
-    Y,
-    epochs=100,
-    # Suppress logging.
-    verbose=0,
-    # Calculate validation results on 20% of the training data.
-    validation_split=0.2)
+X = tf.compat.v1.placeholder(tf.float64, shape=(1, 4))
+Y = tf.compat.v1.placeholder(tf.float64, shape=(1))
 
-hist = pd.DataFrame(history.history)
-hist['epoch'] = history.epoch
+pred = tf.add(tf.matmul(X, W), b, name="prediction")
 
+cost = tf.add(tf.reduce_sum(tf.pow(pred - Y, 2)), tf.multiply(LAMBDA, tf.matmul(tf.transpose(W), W)), name="cost")
 
-def plot_loss(history):
-    plt.plot(history.history['loss'], label='loss')
-    plt.plot(history.history['val_loss'], label='val_loss')
-    plt.ylim([0, 10])
-    plt.xlabel('Epoch')
-    plt.ylabel('Error [MPG]')
-    plt.legend()
-    plt.grid(True)
-    plt.show()
-
-
-plot_loss(history)
+print(cost)
