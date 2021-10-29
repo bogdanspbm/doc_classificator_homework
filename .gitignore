@@ -6,3 +6,5 @@ exp/
 *_pickle
 /*.csv
 /*.png
+venv/
+/venv/
