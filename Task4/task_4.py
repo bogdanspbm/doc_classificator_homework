@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,52 +11,75 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 tf.compat.v1.disable_eager_execution()
-rng = np.random
-
-print(tf.__version__)
 
 D = np.loadtxt('../data/lin_reg.txt', delimiter=',')
-LAMBDA = 0.5  # L2 regularization factor
 
 X = D[:, :-1]
 Y = D[:, -1]
 
-learning_rate = 0.0001
-training_epochs = 1000
-display_step = 50
 
-train_X = X.copy()
-train_Y = Y.copy()
+DIMENSIONS = 4
 
-#print(train_X.reshape(1000))
+noise = lambda: np.random.normal(0,10) # some noise
 
-W = tf.Variable(rng.randn(4, 1), name="weight")
-b = tf.Variable(rng.randn(1), name="bias")
-LAMBDA = tf.Variable(0.5, name="regularization", dtype=tf.float64)
+####################################################################################################
+### GRADIENT DESCENT APPROACH
+####################################################################################################
+# dataset globals
+DS_SIZE = 5000
+TRAIN_RATIO = 0.6  # 60% of the dataset is used for training
+_train_size = int(DS_SIZE * TRAIN_RATIO)
+_test_size = DS_SIZE - _train_size
+ALPHA = 1e-8  # learning rate
+LAMBDA = 0.5  # L2 regularization factor
+TRAINING_STEPS = 1000
 
-print(W)
-print(b)
+# generate the dataset, the labels and split into train/test
+ds = [[np.random.rand() * 1000 for d in range(DIMENSIONS)] for _ in range(DS_SIZE)]  # synthesize data
 
-X = tf.compat.v1.placeholder(tf.float64, shape=(4))
-Y = tf.compat.v1.placeholder(tf.float64, shape=())
+ds = [(x, [sum(x)+noise()]) for x in ds]
 
-pred = tf.add(tf.matmul(tf.reshape(X, shape=[1, 4]), W), b, name="prediction")
+np.random.shuffle(ds)
 
-cost = tf.add(tf.reduce_sum(tf.pow(pred - Y, 2)), tf.multiply(LAMBDA, tf.matmul(tf.transpose(W), W)), name="cost")
+train_data, train_labels = zip(*ds[0:_train_size])
+test_data, test_labels = zip(*ds[_train_size:])
+print(np.asarray(train_data).shape, X.shape)
+print(np.asarray(train_labels).shape, Y.shape)
 
-optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate).minimize(cost)
+# define the computational graph
+graph = tf.Graph()
+with graph.as_default():
+    # declare graph inputs
+    x_train = tf.compat.v1.placeholder(tf.float32, shape=(_train_size, DIMENSIONS))
+    y_train = tf.compat.v1.placeholder(tf.float32, shape=(_train_size, 1))
+    x_test = tf.compat.v1.placeholder(tf.float32, shape=(_test_size, DIMENSIONS))
+    y_test = tf.compat.v1.placeholder(tf.float32, shape=(_test_size, 1))
+    theta = tf.Variable([[0.0] for _ in range(DIMENSIONS)])
+    theta_0 = tf.Variable([[0.0]])  # don't forget the bias term!
+    # forward propagation
+    train_prediction = tf.matmul(x_train, theta) + theta_0
+    test_prediction = tf.matmul(x_test, theta) + theta_0
+    # cost function and optimizer
+    train_cost = (tf.nn.l2_loss(train_prediction - y_train) + LAMBDA * tf.nn.l2_loss(theta)) / float(_train_size)
+    optimizer = tf.compat.v1.train.GradientDescentOptimizer(ALPHA).minimize(train_cost)
+    # test results
+    test_cost = (tf.nn.l2_loss(test_prediction - y_test) + LAMBDA * tf.nn.l2_loss(theta)) / float(_test_size)
 
-init = tf.compat.v1.global_variables_initializer()
+# run the computation
+with tf.compat.v1.Session(graph=graph) as s:
+    tf.compat.v1.initialize_all_variables().run()
+    print("initialized");
+    print(theta.eval())
+    for step in range(TRAINING_STEPS):
+        _, train_c, test_c = s.run([optimizer, train_cost, test_cost],
+                                   feed_dict={x_train: train_data, y_train: train_labels,
+                                              x_test: test_data, y_test: test_labels})
+        if (step % 100 == 0):
+            # it should return bias close to zero and parameters all close to 1 (see definition of f)
+            print("\nAfter", step, "iterations:")
+            # print("   Bias =", theta_0.eval(), ", Weights = ", theta.eval())
+            print("   train cost =", train_c);
+            print("   test cost =", test_c)
 
-with tf.compat.v1.Session() as sess:
-    sess.run(init)
-
-    for epoch in range(training_epochs):
-        for (x, y) in zip(train_X, train_Y):
-            sess.run(optimizer, feed_dict={X: x, Y: y})
-
-        # Display logs per epoch step
-        if (epoch + 1) % display_step == 0:
-            c = sess.run(cost, feed_dict={X: train_X, Y: train_Y})
-            print("Epoch:", '%04d' % (epoch + 1), "cost=", "{:.9f}".format(c),
-                  "W=", sess.run(W), "b=", sess.run(b))
+    #PARAMETERS_GRADDESC = tf.concat(0, [theta_0, theta]).eval()
+    #print("Solution for parameters:\n", PARAMETERS_GRADDESC)
