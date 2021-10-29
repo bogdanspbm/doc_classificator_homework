@@ -27,6 +27,8 @@ display_step = 50
 train_X = X.copy()
 train_Y = Y.copy()
 
+#print(train_X.reshape(1000))
+
 W = tf.Variable(rng.randn(4, 1), name="weight")
 b = tf.Variable(rng.randn(1), name="bias")
 LAMBDA = tf.Variable(0.5, name="regularization", dtype=tf.float64)
@@ -45,7 +47,6 @@ optimizer = tf.compat.v1.train.GradientDescentOptimizer(learning_rate).minimize(
 
 init = tf.compat.v1.global_variables_initializer()
 
-
 with tf.compat.v1.Session() as sess:
     sess.run(init)
 
@@ -55,6 +56,6 @@ with tf.compat.v1.Session() as sess:
 
         # Display logs per epoch step
         if (epoch + 1) % display_step == 0:
-            c = sess.run(cost, feed_dict={X: np.transpose(train_X), Y: train_Y})
+            c = sess.run(cost, feed_dict={X: train_X, Y: train_Y})
             print("Epoch:", '%04d' % (epoch + 1), "cost=", "{:.9f}".format(c),
                   "W=", sess.run(W), "b=", sess.run(b))
