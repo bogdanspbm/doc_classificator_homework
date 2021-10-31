@@ -151,7 +151,7 @@ def task_2(count, lmbd=0.5):
 def task_3():
     min_lmbd = 0
     min_err = 1000
-    for lmbd in np.linspace(0, 1, 30):
+    for lmbd in np.linspace(0, 1, 50):
         err_a, err_b = task_2(5, lmbd)
         print("Last error is " + str(err_a))
         if err_a < min_err:
