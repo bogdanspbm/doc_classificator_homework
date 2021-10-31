@@ -67,8 +67,6 @@ def calc_theta(LAMBDA=0.5):
     # run the computation
     with tf.compat.v1.Session(graph=graph) as s:
         tf.compat.v1.initialize_all_variables().run()
-        print("initialized");
-        print(theta.eval())
         for step in range(TRAINING_STEPS):
             _, train_c, test_c = s.run([optimizer, train_cost, test_cost],
                                        feed_dict={x_train: train_X, y_train: train_Y, x_test: test_X, y_test: test_Y})
@@ -82,12 +80,43 @@ def calc_theta(LAMBDA=0.5):
         return train_c[0][0], test_c[0][0]
 
 
-LAMBDAS = [0, 0.01, 0.025, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7, 0.75, 0.9, 0.95, 0.99, 1, 2, 5, 10]
-LOSSES_TRAIN = []
-LOSSES_TEST = []
-for lmbd in LAMBDAS:
-    train_l, test_l = calc_theta(lmbd)
-    LOSSES_TRAIN.append(train_l)
-    LOSSES_TEST.append(test_l)
+def task_1():
+    LAMBDAS = [0, 0.01, 0.025, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7, 0.75, 0.9, 0.95, 0.99, 1, 2, 5, 10]
+    LOSSES_TRAIN = []
+    LOSSES_TEST = []
+    for lmbd in LAMBDAS:
+        train_l, test_l = calc_theta(lmbd)
+        LOSSES_TRAIN.append(train_l)
+        LOSSES_TEST.append(test_l)
 
-plot_loss(LAMBDAS, LOSSES_TRAIN, LOSSES_TEST)
+    plot_loss(LAMBDAS, LOSSES_TRAIN, LOSSES_TEST)
+
+
+def task_2(count):
+    global train_X, train_Y, test_X, test_Y
+    TRAIN_RATION = (count - 1) / count
+
+    train_size = int(len(X) * TRAIN_RATION)
+    test_size = len(X) - train_size
+
+    tmp_X = X.copy()
+    tmp_Y = Y.copy()
+    for i in range(count):
+        tmp_X = shift(tmp_X, train_size)
+        tmp_Y = shift(tmp_Y, train_size)
+        train_X = tmp_X[:train_size, :]
+        train_Y = tmp_Y[:train_size, :]
+        test_X = tmp_X[train_size:, :]
+        test_Y = tmp_Y[train_size:, :]
+        calc_theta()
+
+
+def shift(xs, n):
+    m = len(xs) - n
+    e = np.empty_like(xs)
+    e[:m] = xs[n:]
+    e[m:] = xs[:n]
+    return e
+
+task_1()
+task_2(5)
