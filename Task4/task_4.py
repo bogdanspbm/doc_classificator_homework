@@ -21,6 +21,7 @@ Y = D[:, -1]
 Y = np.reshape(Y, [1000, 1])
 
 
+# График ошибки от параметра регуляризации
 def plot_loss(x, y_1, y_2):
     plt.plot(x, y_1, label="Train")
     plt.plot(x, y_2, label="Test")
@@ -31,6 +32,7 @@ def plot_loss(x, y_1, y_2):
     plt.show()
 
 
+# График ошибки от эпохи
 def plot_education(y_1, y_2):
     plt.plot(y_1, label="Train")
     plt.plot(y_2, label="Test")
@@ -39,6 +41,15 @@ def plot_education(y_1, y_2):
     plt.legend()
     plt.grid(True)
     plt.show()
+
+
+# Сдвиг элементов массива на n
+def shift(xs, n):
+    m = len(xs) - n
+    e = np.empty_like(xs)
+    e[:m] = xs[n:]
+    e[m:] = xs[:n]
+    return e
 
 
 DIMENSIONS = int(X.shape[1])
@@ -55,6 +66,7 @@ test_X = X[train_size:, :]
 test_Y = Y[train_size:, :]
 
 
+# Обучение
 def calc_theta(LAMBDA=0.5):
     graph = tf.Graph()
     with graph.as_default():
@@ -91,6 +103,7 @@ def calc_theta(LAMBDA=0.5):
         return train_c[0][0], test_c[0][0], train_c_arr, test_c_arr
 
 
+# Нарисуйте график среднеквадратичной ошибки в зависимости от параметра регуляризации
 def task_1():
     LAMBDAS = [0, 0.01, 0.025, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7, 0.75, 0.9, 0.95, 0.99, 1, 2, 5, 10]
     LOSSES_TRAIN = []
@@ -103,6 +116,7 @@ def task_1():
     plot_loss(LAMBDAS, LOSSES_TRAIN, LOSSES_TEST)
 
 
+# Подготовьте исходные данные для 5 fold CV
 def task_2(count, lmbd=0.5):
     global train_X, train_Y, test_X, test_Y
     TRAIN_RATION = (count - 1) / count
@@ -131,14 +145,9 @@ def task_2(count, lmbd=0.5):
     return res_train.mean(), res_test.mean()
 
 
-def shift(xs, n):
-    m = len(xs) - n
-    e = np.empty_like(xs)
-    e[:m] = xs[n:]
-    e[m:] = xs[:n]
-    return e
-
-
+# Поиск оптимального параметра регуляризации
+# Вообще судя по графикам ошибка линейно зависит от LAMBDA и от сюда LAMBDA находится 0
+# Но я думаю, что у меня тут ошибка
 def task_3():
     min_lmbd = 0
     min_err = 1000
@@ -151,6 +160,7 @@ def task_3():
     return min_lmbd
 
 
+# Кривая обучения
 def task_4():
     train_err, test_err, train_arr, test_arr = calc_theta(0)
     plot_education(train_arr, test_arr)
