@@ -174,7 +174,7 @@
       <updated>1618467991829</updated>
       <workItem from="1637306806998" duration="62000" />
       <workItem from="1637306878506" duration="402000" />
-      <workItem from="1637307293758" duration="14450000" />
+      <workItem from="1637307293758" duration="20067000" />
     </task>
     <servers />
   </component>
@@ -194,7 +194,7 @@
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/doc_classificator_homework$task_5__1_.coverage" NAME="task_5 (1) Coverage Results" MODIFIED="1637337624112" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Task5" />
+    <SUITE FILE_PATH="coverage/doc_classificator_homework$task_5__1_.coverage" NAME="task_5 (1) Coverage Results" MODIFIED="1637343400910" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Task5" />
     <SUITE FILE_PATH="coverage/doc_classificator_homework$task_5.coverage" NAME="task_5 Coverage Results" MODIFIED="1637307965297" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Task5/.ipynb_checkpoints" />
   </component>
 </project>
